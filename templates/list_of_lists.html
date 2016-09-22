@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block body %}
+<script src="./js/listSearch.js">
+</script>
+<div id="searchBox" class="container">
+  <form action="/listOflists" method="post">
+    <input type='text' name='search' id="search" value="{{search}}">
+    <button type="submit">Search</button> 
+  </form>
+</div>
+<div class="container">
+  <h1> all of the lists </h1>
+  <div class="form-group">
+  <label for="sel1">Select list:</label>
+</div>
+  {%if all_list != []%}
+  <ul class="list-group" id="listOflists">
+    {{#each data}}
+      <a href="/list/{{title}}/{{_id}}">
+        <li class="list-group-item"> {{title}} </li>
+      </a>
+    {{/each}}
+  </ul>
+  {{else}}
+  <p>dident find enything</p>
+  {{/if}}
+</div>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+{% block body %}
+<script src="{{url_for()}}"></script>
+<div class="container">
+  <h2>
+    Create a list
+  </h2>
+  <h4>
+    Rules
+  </h4>
+  <ul>
+    <li>Be nice to people with your lists</li>
+    <li>Your list will stay forever</li>
+  </ul>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-danger">
+          <strong>Warning</strong>{{message}}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+  <div class="form-group">
+    <form action="/addlist" method="POST" id="addListForm">
+      <div id="inputs">
+        <h4>list Title</h4>
+        <input type="text" name="title" class="form-control" value="{{title}}">
+        <br>
+        <h4>optional(a desciption about your list)</h4>
+        <textarea type="text" name="about" class="form-control">{{about}}
+        </textarea>
+        <h4> add some starting Items </h4>
+          <input type="text" name="items" class="form-control">
+        <br>
+      </div>
+      <button type="button" id="listButton">Another Item</button>
+      <button type="button" id="removeListButton">never mind</button>
+      <input type="submit">
+    </form>
+  </div>
+</div>
+{% endblock %}
