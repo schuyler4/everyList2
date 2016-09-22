@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
-<script src="{{url_for()}}"></script>
+<script src="{{url_for('static', filename='js/listinput.js')}}"></script>
 <div class="container">
   <h2>
     Create a list
@@ -25,17 +25,16 @@
     <form action="/addlist" method="POST" id="addListForm">
       <div id="inputs">
         <h4>list Title</h4>
-        <input type="text" name="title" class="form-control" value="{{title}}">
+        <input type="text" name="title" class="form-control">
         <br>
-        <h4>optional(a desciption about your list)</h4>
-        <textarea type="text" name="about" class="form-control">{{about}}
+        <h4>a desciption about your list </h4>
+        <textarea type="text" name="about" class="form-control">
         </textarea>
         <h4> add some starting Items </h4>
           <input type="text" name="items" class="form-control">
         <br>
       </div>
       <button type="button" id="listButton">Another Item</button>
-      <button type="button" id="removeListButton">never mind</button>
       <input type="submit">
     </form>
   </div>

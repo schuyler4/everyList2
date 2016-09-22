@@ -2,6 +2,7 @@ from sqlalchemy import *
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship, backref
 from sqlalchemy.sql import func
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 Base = declarative_base()
@@ -15,10 +16,10 @@ class List(Base):
 	title = Column(String(50))
 	description = Column(String(500))
 	items = relationship("List_Item", backref="List")
-	comments = relationship("Comments", backref="List")
+	comments = relationship("Comment", backref="List")
 	__tablename__ = "List"
 
-	def __init__(self, title, description):
+	def __init__(self, title, description, popularity):
 		self.title = title
 		self.description = description
 
@@ -43,6 +44,23 @@ class Comment(Base):
 	def __init__(self, name, content):
 		self.name = name
 		self.content = content
+
+
+class User(Base):
+	id = Column(Integer, primary_key=True)
+	username = Column(String(50))
+	password = Column(String(50))
+	__tablename__ = "User"
+
+	def __init__(self, username, password):
+		self.username = username
+		self.password = password
+
+	def set_password(self, password):
+		self.pw_hash = generate_password_hash(password)
+
+	def check_password(self, password):
+		return check_password_hash(self.pw_hash, password)
 
 print ("created all")
 Base.metadata.create_all(engine)

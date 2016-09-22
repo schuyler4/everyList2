@@ -1,3 +1,4 @@
+console.log("panda")
 const typeBox = $('#typeSelector');
 const numbered = $('#numbered');
 const bullets = $('#bullets');

@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="container">
+  <div class="jumbotron" id="optionDiv">
+    <h1> {{list.title}} </h1>
+    <p>{{list.description}}</p>
+    <select class="form-control" id="typeSelector">
+      <option id="bullets">bullets</option>
+      <option id="numbered">numbered</option>
+    </select>
+    <ul id="mainList">
+      {% for item in items %}
+        <h2><li>{{item.content}}</li></h2>
+      {% endfor %}
+    </ul>
+    <form id="update">
+      <input type='hidden' name="id" value="{{id}}" id="updateid">
+      <input type="text" name="newItems" id="newItems">
+      <button type="submit">add Item</button>
+    </form>
+  </div>
+  <div class="jumbotron">
+    <!--<h4>popularity: <span id="popularity">{{list.popularity}}</span></h4>-->
+    <form id="like">
+      <input type='hidden' name="id" value="{{id}}" id="likeidInput">
+          <button type="submit" class="btn btn-primary">Like</button>
+    </form>
+    <form id="dislike">
+      <input type='hidden' name="id" value="{{id}}" id="dislikeidInput">
+          <button type="submit" class="btn btn-primary">Dislike</button>
+    </form>
+  </div>
+  <div class="jumbotron" id="commentBox">
+    <div id="commentForm">
+      <form id="comment">
+        <input type='hidden' name="id" value="{{id}}" id="commentid">
+        <textarea type="text" name="comment" id="thecomment">
+        </textarea><br>
+        <button type="submit">Comment</button>
+      </form>
+    </div>
+    <div id="commentStream">
+      {% for comment in list.comments %}
+        <h3>{{comment.name}}</h3>
+        <p>{{comment.content}}</p>
+      {% endfor %}
+    </div>
+  </div>
+ </div>
+ <!-- <script src="/js/listFormating.js"></script>
+ <script src="/js/actions.js"></script> -->
+ {% endblock %}
