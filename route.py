@@ -1,12 +1,35 @@
 from flask import Blueprint, render_template, request, session, redirect, url_for, flash, session
-from models import List, List_Item, Comment, User, db_session
+from models import List, List_Item, Comment, User, Idea,db_session
 from sqlalchemy import *
 from sqlalchemy.orm import *
+
 
 routes = Blueprint('routes', __name__)
 @routes.route("/")
 def home():
-	return render_template('home.html')
+	lists = db_session.query(List).limit(10).all()
+	return render_template('home.html', lists=lists)
+
+
+@routes.route("/idea", methods=["POST"])
+def idea():
+	title = request.form["title"]
+	content = request.form["content"]
+	new_idea = Idea(title, content)
+	if new_idea.title and new_idea.content:
+		db_session.add(new_idea)
+		try: 
+			db_session.commit()
+			return redirect(url_for('routes.home'))
+		except Exception as e:
+			print(e)
+			db_session.rollback()
+			db_session.flush()
+			flash("something whent wrong")
+			return redirect(url_for('routes.home'))
+	else:
+		flash("are you sure you filled in all the fields")
+		return redirect(url_for('routes.home'))
 
 
 @routes.route("/addlist", methods=["GET", "POST"])
@@ -57,6 +80,7 @@ def list(title, id):
 	list = db_session.query(List).filter(List.title == title, List.id == id).first()
 	list_items = db_session.query(List_Item).filter(List_Item.list_id == list.id).all()
 	return render_template('list.html', list=list, items=list_items)
+
 
 @routes.route("/like", methods=["POST"])
 def like():
@@ -112,12 +136,12 @@ def logout():
 	return redirect(url_for('routes.home'))
 
 
-@routes.route("/deleteitems/<title>/<id>")
+@routes.route("/deleteitems/<title>/<id>", methods=['GET', 'POST'])
 def delete_items(title, id):
 	list = db_session.query(List).filter(List.title == title, List.id == id).first()
 	if request.method == "POST":
 		item = request.form['item']
-		delete_item = db_session.query(List_Item).filter(List_Item.content = item).first()
+		delete_item = db_session.query(List_Item).filter(List_Item.content == item, List_Item.list_id == list.id).first()
 		if delete_item:
 			db_session.delete(delete_item)
 			try:
@@ -126,12 +150,16 @@ def delete_items(title, id):
 				db_session.rollback()
 				db_session.flush()
 				print("error")
+				flash("an error ocured delting this item")
+				return redirect(url_for('routes.delete_items', title=list.title, id=list.id))
 		else:
 			flash("this is not an item on this list")
+			return redirect(url_for('routes.delete_items', title=list.title, id=list.id))
 		return redirect(url_for('routes.list', title=list.title, id=list.id))
 	if session.get('logged_in') == False:
 		return redirect(url_for('routes.login'))
 	if not list:
 		return redirect(url_for('routes.list_of_lists'))
 	items = db_session.query(List_Item).filter(List_Item.list_id == id).all()
-	return render_template('editlist.html', items = items)
+	list = db_session.query(List).filter(List.id == id).first()
+	return render_template('editlist.html', items = items, list=list)

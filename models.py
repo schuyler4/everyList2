@@ -9,7 +9,7 @@ Base = declarative_base()
 engine = create_engine('sqlite:///data.db', echo=True)
 Session = sessionmaker(bind=engine)
 db_session = Session()
-
+metadata = MetaData()
 
 class List(Base):
 	id = Column('list_id', Integer, primary_key=True)
@@ -19,7 +19,7 @@ class List(Base):
 	comments = relationship("Comment", backref="List")
 	__tablename__ = "List"
 
-	def __init__(self, title, description, popularity):
+	def __init__(self, title, description):
 		self.title = title
 		self.description = description
 
@@ -27,7 +27,7 @@ class List(Base):
 class List_Item(Base):
 	list_id = Column(Integer, ForeignKey(List.id), primary_key=True)
 	content = Column(String(50))
-	list = relationship("List", cascade="all,delete", backref="List_Item")
+	list = relationship("List", cascade="all, delete-orphan", backref="List_Item", single_parent=True)
 	__tablename__ = "List_Item"
 
 	def __init__(self, content):
@@ -61,6 +61,17 @@ class User(Base):
 
 	def check_password(self, password):
 		return check_password_hash(self.pw_hash, password)
+
+
+class Idea(Base):
+	id = Column(Integer, primary_key=True)
+	title = Column(String(50))
+	content = Column(String)
+	__tablename__ = "Idea"
+
+	def __init__(self, title, content):
+		self.title = title
+		self.content = content
 
 print ("created all")
 Base.metadata.create_all(engine)

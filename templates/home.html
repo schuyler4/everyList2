@@ -1,3 +1,37 @@
 {% extends "layout.html" %}
 {% block body %}
+<div class='container'>
+	<div class="jumbotron">
+	  <h3>Top Rated Lists</h3>
+	  <ul class="list-group">
+	    {% for list in lists %}
+	      <a href="/list/{{title}}/{{id}}">
+	        <li class="list-group-item">
+	          <span class="badge"></span>
+	          {{list.title}}
+	        </li>
+	      </a>
+	    {% endfor %}
+	    </ul>
+	</div>
+	<div class="jumbotron">
+		<p>List everything is currently vary new, if you have any ideas feel freee to submit them.</p>
+		<form action="/idea" method="POST">
+			<h3>title for your idea<input type="text" name="title" class="form-control"></h3>
+			<h3>the content for your idea
+			<textarea type="text" name="content" class="form-control">
+			</textarea></h3>
+			<input type="submit">
+		</form>
+		{% with messages = get_flashed_messages() %}
+    		{% if messages %}
+      			{% for message in messages %}
+        <div class="alert alert-danger">
+          <strong>Warning</strong>{{message}}
+        </div>
+      			{% endfor %}
+    		{% endif %}
+  		{% endwith %}
+	</div>
+</div>
 {% endblock %}

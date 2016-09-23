@@ -3,7 +3,7 @@
 <div class="container">
   <div class="jumbotron">
     <h4> type in the name of the item you want to delete </h4>
-    <form action="/delete" method="post">
+    <form action="/deleteitems/{{list.title}}/{{list.id}}" method="POST">
       <input type="text" name="item">
       <button type="submit">delete item</button>
     </form>
@@ -12,6 +12,15 @@
         	<h1><li>{{item.content}}</li></h1>
         {% endfor %}
       </ul>
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+      {% for message in messages %}
+      <div class="alert alert-danger">
+        {{message}}
+      </div>
+      {% endfor %}
+      {% endif %}
+    {% endwith %}
   </div>
 </div>
 {% endblock %}
