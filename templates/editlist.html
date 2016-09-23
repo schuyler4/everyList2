@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="container">
+  <div class="jumbotron">
+    <h4> type in the name of the item you want to delete </h4>
+    <form action="/delete" method="post">
+      <input type="text" name="item">
+      <button type="submit">delete item</button>
+    </form>
+      <ul id="mainList">
+        {% for item in items %}
+        	<h1><li>{{item.content}}</li></h1>
+        {% endfor %}
+      </ul>
+  </div>
+</div>
+{% endblock %}

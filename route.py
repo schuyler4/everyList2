@@ -15,19 +15,33 @@ def add_list():
 		title = request.form["title"]
 		description = request.form["about"]
 		items = request.form['items']
-		print items
 		new_list = List(title, description, 0)
 		new_items = List_Item(items)
+		list_created = False
+		items_created = False
+		new_items.content
 		new_list.items.append(new_items)
-		db_session.add(new_list)
-		db_session.add(new_items)
-		try:
-			db_session.commit()
-		except Exception as e:
-			print(e)
-			db_session.rollback()
-			db_session.flush()
-		return "sucksess"
+		if new_list.title and new_list.description:
+			db_session.add(new_list)
+			list_created = True
+		else:
+			flash("your list must have a title and a desciption")
+		if new_items.content:
+			list_items = True
+			db_session.add(new_items)
+		else:
+			flash("your list must have some items")
+		if list_created and items_created:
+			try:
+				db_session.commit()
+			except Exception as e:
+				print(e)
+				db_session.rollback()
+				db_session.flush()
+		created_list = db_session.query(List).filter(List.title == title).first()
+		redirect_id = created_list.id
+		redirect_title = created_list.title
+		return redirect(url_for('routes.list', title=redirect_title, id=redirect_id))
 	return render_template('add_list.html')
 
 
@@ -41,10 +55,7 @@ def list_of_lists():
 @routes.route("/list/<title>/<id>", methods=["GET" ,"POST"])
 def list(title, id):
 	list = db_session.query(List).filter(List.title == title, List.id == id).first()
-	list_items = db_session.query(List).filter(List.title == title, List.id == id).options(lazyload('items')).all()
-	print "panda"
-	list.items.content
-	print "panda"
+	list_items = db_session.query(List_Item).filter(List_Item.list_id == list.id).all()
 	return render_template('list.html', list=list, items=list_items)
 
 @routes.route("/like", methods=["POST"])
@@ -75,7 +86,7 @@ def sign_up():
 			except Exception as e:
 				db_session.rollback()
 				db_session.flush()
-				print "error"
+				print ("error")
 			return redirect(url_for('routes.home'))
 	return render_template('signup.html')
 
@@ -87,8 +98,8 @@ def login():
 		password = request.form["password"]
 		user = db_session.query(User).filter(User.username == username, User.password == password).first()
 		if user:
+			session['logged_in'] = True
 			return redirect(url_for('routes.home'))
-			session["logged_in"] = True
 		else:
 			return redirect(url_for('routes.login'))
 			flash("your username or password wash entered incorectly")
@@ -97,10 +108,30 @@ def login():
 
 @routes.route("/logout")
 def logout():
-	session.clear()
+	session['logged_in'] = False
 	return redirect(url_for('routes.home'))
 
 
 @routes.route("/deleteitems/<title>/<id>")
 def delete_items(title, id):
-	pass
+	list = db_session.query(List).filter(List.title == title, List.id == id).first()
+	if request.method == "POST":
+		item = request.form['item']
+		delete_item = db_session.query(List_Item).filter(List_Item.content = item).first()
+		if delete_item:
+			db_session.delete(delete_item)
+			try:
+				db_session.commit()
+			except Exception as e:
+				db_session.rollback()
+				db_session.flush()
+				print("error")
+		else:
+			flash("this is not an item on this list")
+		return redirect(url_for('routes.list', title=list.title, id=list.id))
+	if session.get('logged_in') == False:
+		return redirect(url_for('routes.login'))
+	if not list:
+		return redirect(url_for('routes.list_of_lists'))
+	items = db_session.query(List_Item).filter(List_Item.list_id == id).all()
+	return render_template('editlist.html', items = items)
