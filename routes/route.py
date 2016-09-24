@@ -37,13 +37,12 @@ def add_list():
 	if request.method == "POST":
 		title = request.form["title"]
 		description = request.form["about"]
-		new_items = request.form.getlist('items')
 		new_list = List(title, description)
-		for item in new_items:
-			print("panda")
-			print(item)
-			print("panda")
-			new_items = List_Item(new_items[item])
+		list_items = request.form.getlist('items')
+		print(list_items)
+		for i in range(0, len(list_items)):
+			print(list_items[i])
+			new_items = List_Item(list_items[i])
 			new_list.items.append(new_items)
 		list_created = False
 		items_created = False
@@ -65,7 +64,8 @@ def add_list():
 				print(e)
 				db_session.rollback()
 				db_session.flush()
-		created_list = db_session.query(List).filter(List.title == title).first()
+		with db_session.no_autoflush:
+			created_list = db_session.query(List).filter(List.title == title).first()
 		redirect_id = created_list.id
 		redirect_title = created_list.title
 		return redirect(url_for('routes.list', title=redirect_title, id=redirect_id))
@@ -81,7 +81,8 @@ def list_of_lists():
 
 @routes.route("/list/<title>/<id>", methods=["GET" ,"POST"])
 def list(title, id):
-	list = db_session.query(List).filter(List.title == title, List.id == id).first()
+	with db_session.no_autoflush:
+		list = db_session.query(List).filter(List.title == title, List.id == id).first()
 	list_items = db_session.query(List_Item).filter(List_Item.list_id == list.id).all()
 	return render_template('list.html', list=list, items=list_items)
 

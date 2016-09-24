@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, session, redirect, url_for, flash, session
-from models.models import List, List_Item, Comment, User, Idea,db_session
+from ./models/models import List, List_Item, Comment, User, Idea, db_session
 from sqlalchemy import *
 from sqlalchemy.orm import *
 

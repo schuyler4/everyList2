@@ -1,5 +1,5 @@
 from sqlalchemy import *
-from models import Base
+from .models import Base
 
 class Admin_Password(Base):
 	id = Column('admin_password_id',Integer, primary_key=True)
@@ -21,6 +21,7 @@ class Admin_Acount(Base):
 	username = Column(String(50))
 	password = Column(String(50))
 	rank = Column(Integer)
+	__tablename__ = "Admin_Acount"
 
 	def __init__(self, username, password, rank):
 		self.username = username

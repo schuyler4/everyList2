@@ -1,6 +1,7 @@
 from flask import Flask, Blueprint
 #from flask.ext.hashing import Hashing
-from flask_migrate import Migrate
+from flask_alembic import Alembic
+
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
