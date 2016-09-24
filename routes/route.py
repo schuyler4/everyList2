@@ -37,13 +37,17 @@ def add_list():
 	if request.method == "POST":
 		title = request.form["title"]
 		description = request.form["about"]
-		items = request.form['items']
-		new_list = List(title, description, 0)
-		new_items = List_Item(items)
+		new_items = request.form.getlist('items')
+		new_list = List(title, description)
+		for item in new_items:
+			print("panda")
+			print(item)
+			print("panda")
+			new_items = List_Item(new_items[item])
+			new_list.items.append(new_items)
 		list_created = False
 		items_created = False
-		new_items.content
-		new_list.items.append(new_items)
+		#new_items.content
 		if new_list.title and new_list.description:
 			db_session.add(new_list)
 			list_created = True
@@ -90,11 +94,6 @@ def like():
 @routes.route("/dislike", methods=["POST"])
 def dislike():
 	pass
-
-@routes.route("/admin_signup", methods=["GET", "POST"])
-def admin_signup()
-	
-
 
 
 @routes.route("/signup", methods=["GET", "POST"])

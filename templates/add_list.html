@@ -1,6 +1,5 @@
 {% extends "layout.html" %}
 {% block body %}
-<script src="{{url_for('static', filename='js/listinput.js')}}"></script>
 <div class="container">
   <h2>
     Create a list
@@ -35,8 +34,9 @@
         <br>
       </div>
       <button type="button" id="listButton">Another Items</button>
-      <input type="submit">
+      <button type="submit">Add List</button>
     </form>
   </div>
 </div>
+<script src="{{url_for('static', filename='js/listinput.js')}}"></script>
 {% endblock %}

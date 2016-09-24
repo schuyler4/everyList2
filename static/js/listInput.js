@@ -59,5 +59,7 @@ $('div > p').each(function() {
 });
 
 $('#listButton').click(function() {
-
+  console.log("clicked")
+  $('#inputs').append("<input type='text' name='items' class='form-control'" +
+   "id='newItems'/><br>");
 });
