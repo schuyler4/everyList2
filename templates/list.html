@@ -22,17 +22,18 @@
         <button type="button" id="editButton">Edit Items</button>
     </a>
   </div>
+  <!--
   <div class="jumbotron">
-    <!--<h4>popularity: <span id="popularity">{{list.popularity}}</span></h4>-->
+    <h4>popularity: <span id="popularity">{{list.popularity}}</span></h4>
     <form id="like">
-      <input type='hidden' name="id" value="{{id}}" id="likeidInput">
-          <button type="submit" class="btn btn-primary">Like</button>
+        <input type='hidden' name="id" value="{{list.id}}" id="likeidInput">
+        <button type="submit" class="btn btn-primary">Like</button>
     </form>
     <form id="dislike">
       <input type='hidden' name="id" value="{{id}}" id="dislikeidInput">
           <button type="submit" class="btn btn-primary">Dislike</button>
     </form>
-  </div>
+  </div>-->
   <div class="jumbotron" id="commentBox">
     <div id="commentForm">
       <form id="comment">
@@ -50,6 +51,8 @@
     </div>
   </div>
  </div>
+ <script src="{{url_for('static', filename='js/listActions.js')}}"></script>
+ <script src="{{url_for('static', filename='js/listFormating.js)}}"></script>
  <!-- <script src="/js/listFormating.js"></script>
  <script src="/js/actions.js"></script> -->
  {% endblock %}

@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, session, redirect, url_fo
 from models.models import List, List_Item, Comment, User, Idea,db_session
 from sqlalchemy import *
 from sqlalchemy.orm import *
+from flask_mail import Message
 
 
 routes = Blueprint('routes', __name__)
@@ -35,37 +36,44 @@ def idea():
 @routes.route("/addlist", methods=["GET", "POST"])
 def add_list():
 	if request.method == "POST":
+
 		title = request.form["title"]
 		description = request.form["about"]
 		new_list = List(title, description)
+
 		list_items = request.form.getlist('items')
-		print(list_items)
-		for i in range(0, len(list_items)):
-			print(list_items[i])
-			new_items = List_Item(list_items[i])
+
+		for item in list_items:
+			print(item)
+			new_items = List_Item(item)
+			db_session.add(new_items)
 			new_list.items.append(new_items)
-		list_created = False
+		print("panda")
+
+		db_session.add(new_list)
+
 		items_created = False
-		#new_items.content
+		list_created = False
+
 		if new_list.title and new_list.description:
-			db_session.add(new_list)
 			list_created = True
 		else:
 			flash("your list must have a title and a desciption")
 		if new_items.content:
 			list_items = True
-			db_session.add(new_items)
 		else:
 			flash("your list must have some items")
+			
 		if list_created and items_created:
 			try:
 				db_session.commit()
+				print("pandas are awsome")
 			except Exception as e:
 				print(e)
 				db_session.rollback()
 				db_session.flush()
-		with db_session.no_autoflush:
-			created_list = db_session.query(List).filter(List.title == title).first()
+
+		created_list = db_session.query(List).filter(List.title == title).first()
 		redirect_id = created_list.id
 		redirect_title = created_list.title
 		return redirect(url_for('routes.list', title=redirect_title, id=redirect_id))
@@ -74,27 +82,25 @@ def add_list():
 
 @routes.route("/listoflists", methods=["GET", "POST"])
 def list_of_lists():
+
+	searched = False
+	search = None
+
+	if request.method == "POST":
+		search = request.form['search']
+		all_lists = db_session.query(List).filter(List.title == search).all()
+		print(all_lists)
+		return render_template('list_of_lists.html', all_lists = all_lists)
+
 	all_lists = db_session.query(List).all()
-	print(all_lists)
 	return render_template('list_of_lists.html', all_lists = all_lists)
 
 
 @routes.route("/list/<title>/<id>", methods=["GET" ,"POST"])
 def list(title, id):
-	with db_session.no_autoflush:
-		list = db_session.query(List).filter(List.title == title, List.id == id).first()
+	list = db_session.query(List).filter(List.title == title, List.id == id).first()
 	list_items = db_session.query(List_Item).filter(List_Item.list_id == list.id).all()
 	return render_template('list.html', list=list, items=list_items)
-
-
-@routes.route("/like", methods=["POST"])
-def like():
-	pass
-
-
-@routes.route("/dislike", methods=["POST"])
-def dislike():
-	pass
 
 
 @routes.route("/signup", methods=["GET", "POST"])
@@ -117,6 +123,11 @@ def sign_up():
 				db_session.flush()
 				print ("error")
 			return redirect(url_for('routes.home'))
+		msg = Message("Hello Email World",
+						sender="marek.s.newton@gmail.com",
+						recipients=["marek.s.newton@gmail.com"])
+		mail.send(msg)
+
 	return render_template('signup.html')
 
 
